@@ -34,6 +34,17 @@ User.prototype.validate = function() {
 
 }
 
+User.prototype.login = function(callback) {
+    this.cleanUp()
+    usersCollection.findOne({username: this.formData.username}, (err, attemptedUser) => {
+        if (attemptedUser && attemptedUser.password == this.formData.password) {
+            callback("Logged in!")
+        } else {
+            callback('Invalid username/password!')
+        }
+    })
+}
+
 User.prototype.register = function() {
     // validate data
     this.cleanUp()
