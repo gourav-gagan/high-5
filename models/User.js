@@ -34,14 +34,18 @@ User.prototype.validate = function() {
 
 }
 
-User.prototype.login = function(callback) {
-    this.cleanUp()
-    usersCollection.findOne({username: this.formData.username}, (err, attemptedUser) => {
-        if (attemptedUser && attemptedUser.password == this.formData.password) {
-            callback("Logged in!")
-        } else {
-            callback('Invalid username/password!')
-        }
+User.prototype.login = function() {
+    return new Promise((resolve, reject) => {
+        this.cleanUp()
+        usersCollection.findOne({username: this.formData.username}).then((attemptedUser) => {
+            if (attemptedUser && attemptedUser.password == this.formData.password) {
+                resolve("Logged in!")
+            } else {
+                reject('Invalid username/password!')
+            }
+        }).catch(() => {
+            reject("Please try again later...")
+        })
     })
 }
 
