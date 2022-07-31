@@ -8,7 +8,7 @@ port = process.env.PORT
 
 mongoose.connect(connectionString, (err) => {
     if (err) throw err
-        module.exports = mongoose.connection.db
-        const app = require('./app')
-        app.listen(port)
-    })
+    module.exports = mongoose.connection.db
+    const app = require('./app')
+    app.listen(port)
+})
