@@ -4,15 +4,19 @@ exports.login = (req, res) => {
     let user = new User(req.body)
     user.login().then(function(result) {
         req.session.user = {username: user.formData.username}
-        res.send(result)
+        req.session.save(function() {
+            res.redirect('/')
+        })
     }).catch(function(e) {
         res.send(e)
     })
 
 }
 
-exports.logout = function () {
-    
+exports.logout = function (req, res) {
+    req.session.destroy(function() {
+        res.redirect('/')
+    })
 }
 
 exports.register = (req, res) => {
