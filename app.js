@@ -1,6 +1,7 @@
 const express = require('express')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')
+const flash = require('connect-flash')
 const app = express()
 
 let sessionConfig = session({
@@ -14,6 +15,7 @@ let sessionConfig = session({
 const router = require('./router')
 
 app.use(sessionConfig)
+app.use(flash())
 
 app.use(express.static('public')) //import our public folder for static files
 

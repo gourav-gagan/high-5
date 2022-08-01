@@ -8,7 +8,10 @@ exports.login = (req, res) => {
             res.redirect('/')
         })
     }).catch(function(e) {
-        res.send(e)
+        req.flash('errors', e) //adds flash abject to req.user and add key:valuee = errors:e
+        req.session.save(function() {
+            res.redirect('/')
+        })
     })
 
 }
@@ -23,7 +26,13 @@ exports.register = (req, res) => {
     let user = new User(req.body)
     user.register()
     if (user.errors.length) {
-        res.send(user.errors)
+        // res.send(user.errors)
+        user.errors.forEach(function(error) {
+            req.flash('regErrors', error)
+        })
+        req.session.save(function() {
+            res.redirect('/')
+        })
     } else {
         res.send("Thanks for registering.")
     }
@@ -33,6 +42,6 @@ exports.home = (req, res) => {
     if (req.session.user) {
         res.render('home-dashboard', {username: req.session.user.username})
     } else {
-        res.render('home-guest')
+        res.render('home-guest', {errors: req.flash('errors'), regErrors: req.flash('regErrors') })
     }
 }
