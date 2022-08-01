@@ -10,4 +10,5 @@ A social media platform where users can share there stories.
 - User sign-up and login authorisation
 - password hashing using bcrypt
 - implemented sessions using express-sessions
-- session validation
+- session based authorisations
+
