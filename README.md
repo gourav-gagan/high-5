@@ -5,6 +5,8 @@ A social media platform where users can share there stories and knowledge.
 Under development using javascript, nodejs, express, mongodb.
 Hosted on heroku https://high5-online.herokuapp.com/
 
+Working: Sign-up, Login, Logout
+
 ## Things I Did
 
 - Used MVC architecture for organisation
