@@ -11,4 +11,4 @@ A social media platform where users can share there stories.
 - password hashing using bcrypt
 - implemented sessions using express-sessions
 - session based authorisations
-
+- Added email md5 hash generated avatars from robohash.org
