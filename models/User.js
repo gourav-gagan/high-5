@@ -21,18 +21,29 @@ User.prototype.cleanUp = function() {
 }
 
 User.prototype.validate = function() {
+    return new Promise(async (resolve, reject) => {
 
-    if (this.formData.username == ""){this.errors.push("You must provide a username!")}
-    else if (this.formData.username.length > 0 && this.formData.username.length < 3) {this.errors.push("Username should be atleast 3 characters!")}
-    else if (!validator.isAlphanumeric(this.formData.username)) {this.errors.push("Username can only contain letters and numbers!")}
-    else if (this.formData.username.length > 30) {this.errors.push("Username cannot exceed 30 characters!")}
+        if (this.formData.username == ""){this.errors.push("You must provide a username!")}
+        else if (this.formData.username.length > 0 && this.formData.username.length < 3) {this.errors.push("Username should be atleast 3 characters!")}
+        else if (!validator.isAlphanumeric(this.formData.username)) {this.errors.push("Username can only contain letters and numbers!")}
+        else if (this.formData.username.length > 30) {this.errors.push("Username cannot exceed 30 characters!")}
+        else {
+            let usernameExists = await usersCollection.findOne({username: this.formData.username})
+            if (usernameExists) {this.errors.push("Username alrady taken.")}
+        }
+    
+        if (!validator.isEmail(this.formData.email)){this.errors.push("You must provide a valid email address!")}
+        else  {
+            let emailExists = await usersCollection.findOne({email: this.formData.email})
+            if (emailExists) {this.errors.push("That email already being used.")}
+        }
+    
+        if (this.formData.password == ""){this.errors.push("You must provide a password!")}
+        else if (this.formData.password.length > 0 && this.formData.password.length < 8) {this.errors.push("Password should be atleast 8 characters!")}
+        else if (this.formData.password.length > 50) {this.errors.push("Password cannot exceed 50 characters!")}
 
-    if (!validator.isEmail(this.formData.email)){this.errors.push("You must provide a valid email address!")}
-
-    if (this.formData.password == ""){this.errors.push("You must provide a password!")}
-    else if (this.formData.password.length > 0 && this.formData.password.length < 8) {this.errors.push("Password should be atleast 8 characters!")}
-    else if (this.formData.password.length > 50) {this.errors.push("Password cannot exceed 50 characters!")}
-
+        resolve()
+    })
 }
 
 User.prototype.login = function() {
@@ -42,7 +53,7 @@ User.prototype.login = function() {
             if (attemptedUser && bcrypt.compareSync(this.formData.password, attemptedUser.password)) {
                 resolve("Logged in!")
             } else {
-                reject('Invalid username/password!')
+                reject('Invalid Username or Password!')
             }
         }).catch(() => {
             reject("Please try again later...")
@@ -51,17 +62,22 @@ User.prototype.login = function() {
 }
 
 User.prototype.register = function() {
-    // validate data
-    this.cleanUp()
-    this.validate()
-    
-    //iff no validation error save user data into database
-    if (!this.errors.length) {
-        //hash user password
-        let salt = bcrypt.genSaltSync(10)
-        this.formData.password = bcrypt.hashSync(this.formData.password, salt)
-        usersCollection.insertOne(this.formData)
-    }
+    return new Promise(async (resolve, reject) => {
+        // validate data
+        this.cleanUp()
+        await this.validate()
+        
+        //iff no validation error save user data into database
+        if (!this.errors.length) {
+            //hash user password
+            let salt = bcrypt.genSaltSync(10)
+            this.formData.password = bcrypt.hashSync(this.formData.password, salt)
+            await usersCollection.insertOne(this.formData)
+            resolve()
+        } else {
+            reject(this.errors)
+        }
+    })
 }
 
 module.exports = User
