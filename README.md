@@ -3,6 +3,7 @@
 A social media platform where users can share there stories and knowledge.
 
 Developed using javascript, nodejs, express, mongodb.
+Hosted on heroku https://high5-online.herokuapp.com/
 
 ## Things I Did
 
