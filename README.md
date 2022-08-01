@@ -1,6 +1,8 @@
-# To-Do List Project
+# High5
 
-A social media platform where users can share there stories.
+A social media platform where users can share there stories and knowledge.
+
+Developed using javascript, nodejs, express, mongodb.
 
 ## Things I Did
 
