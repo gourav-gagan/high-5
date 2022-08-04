@@ -17,6 +17,11 @@ const router = require('./router')
 app.use(sessionConfig)
 app.use(flash())
 
+app.use(function(req, res, next) {
+    res.locals.user = req.session.user
+    next()
+})
+
 app.use(express.static('public')) //import our public folder for static files
 
 app.use(express.urlencoded({extended: false})) //tell express to accept html form submits
