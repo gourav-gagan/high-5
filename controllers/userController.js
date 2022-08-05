@@ -57,3 +57,13 @@ exports.home = (req, res) => {
         res.render('home-guest', {errors: req.flash('errors'), regErrors: req.flash('regErrors') })
     }
 }
+
+exports.ifUserExists = function(req, res, next) {
+    //User.findByUsername(req.params.username)
+    //logic
+    next()
+}
+
+exports.profilePostsScreen = function(req, res) {
+    res.render('profile')
+}
