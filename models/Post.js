@@ -33,8 +33,8 @@ Post.prototype.create = function() {
         this.validate()
         if (!this.errors.length) {
             //save post in database
-            postsCollection.insertOne(this.data).then(() => {
-                resolve()
+            postsCollection.insertOne(this.data).then((info) => {
+                resolve(info.insertedId)
             }).catch(() => {
                 this.errors.push("Please try again later...")
                 reject(this.errors)

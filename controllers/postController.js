@@ -6,10 +6,12 @@ exports.viewCreateScreen = function(req, res) {
 
 exports.create = function(req, res) {
     let post = new Post(req.body, req.session.user._id)
-    post.create().then(function() {
-        res.send("New post created")
+    post.create().then(function(newId) {
+        req.flash("success", "New post successfully created.")
+        req.session.save(() => res.redirect(`/post/${newId}`))
     }).catch(function(errors) {
-        res.send(errors)
+        errors.forEach(error => req.flash("errors", error))
+        req.session.save(() => res.redirect("/create-post"))
     })
 }
 
@@ -26,7 +28,12 @@ exports.viewEditScreen = async function(req, res) {
     //ask post model for relevent data for this post
     try {
         let post = await Post.findSinglePostById(req.params.id)
-        res.render('edit-post', {post: post})
+        if (post.authorId == req.visitorId) {
+            res.render('edit-post', {post: post})
+        } else {
+            req.flash("errors", "You don't have permisssions to perform that action.")
+            req.session.save(() => res.redirect("/"))
+        }
     } catch {
         res.render('404')
     }
