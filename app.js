@@ -18,6 +18,10 @@ app.use(sessionConfig)
 app.use(flash())
 
 app.use(function(req, res, next) {
+    // make all error/success flash messages available to all templates
+    res.locals.errors = req.flash("errors")
+    res.locals.success = req.flash("success")
+
     // make current user id available on the req object
     if (req.session.user) {req.visitorId = req.session.user._id} else {req.visitorId=0}
 

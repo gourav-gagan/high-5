@@ -2,10 +2,11 @@ const postsCollection = require('../db').db().collection("posts")
 const ObjectId = require('mongoose').Types.ObjectId
 const User = require('./User')
 
-let Post = function(data, userid) {
+let Post = function(data, userid, requestedPostId) {
     this.data = data
     this.errors = []
-    this.data.userID = userid
+    this.data.userid = userid
+    this.requestedPostId = requestedPostId
 }
 
 Post.prototype.cleanUp = function() {
@@ -17,7 +18,7 @@ Post.prototype.cleanUp = function() {
         title: this.data.title.trim(), // trim to ignore empty spaces start and end of title
         body: this.data.body.trim(),
         createdDate: new Date(),
-        author: ObjectId(this.data.userID)
+        author: ObjectId(this.data.userid)
     }
 }
 
@@ -41,6 +42,36 @@ Post.prototype.create = function() {
         }
         else {
             reject(this.errors)
+        }
+    })
+}
+
+Post.prototype.update = function() {
+    return new Promise(async (resolve, reject) => {
+        try{
+            let post = await Post.findSinglePostById(this.requestedPostId, this.data.userid)
+            if (post.isVisitorOwner) {
+                // actually update db
+                let status = await this.actuallyUpdate()
+                resolve(status)
+            } else {
+                reject()
+            }
+        } catch {
+            reject()
+        }
+    })
+}
+
+Post.prototype.actuallyUpdate = function() {
+    return new Promise(async (resolve, reject) => {
+        this.cleanUp()
+        this.validate()
+        if (!this.errors.length) {
+            await postsCollection.findOneAndUpdate({_id: new ObjectId(this.requestedPostId)}, {$set: {title: this.data.title, body: this.data.body}})
+            resolve("success")
+        } else {
+            resolve("failure")
         }
     })
 }
