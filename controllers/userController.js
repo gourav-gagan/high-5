@@ -1,4 +1,5 @@
 const User = require('../models/User')
+const Post = require('../models/Post')
 
 exports.checkLoginSession = function(req, res, next) {
     if (req.session.user) {
@@ -61,7 +62,6 @@ exports.home = (req, res) => {
 exports.ifUserExists = function(req, res, next) {
     User.findByUsername(req.params.username).then(function(userDocument) {
         req.profileUser = userDocument
-        //console.log(userDocument)
         next()
     }).catch(function() {
         res.render('404')
@@ -69,8 +69,14 @@ exports.ifUserExists = function(req, res, next) {
 }
 
 exports.profilePostsScreen = function(req, res) {
-    res.render('profile', {
-        profileUsername: req.profileUser.username,
-        profileAvatar: req.profileUser.avatar
+    // ask out post model for posts by some author id
+    Post.findPostsByAuthorId(req.profileUser._id).then(function(posts) {
+        res.render('profile', {
+            posts: posts,
+            profileUsername: req.profileUser.username,
+            profileAvatar: req.profileUser.avatar
+    })
+    }).catch(function(){
+        res.render('404')
     })
 }
