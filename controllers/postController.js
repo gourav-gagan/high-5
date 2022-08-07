@@ -25,19 +25,17 @@ exports.viewSinglePost = async function(req, res) {
 }
 
 exports.viewEditScreen = async function(req, res) {
-    //ask post model for relevent data for this post
     try {
-        let post = await Post.findSinglePostById(req.params.id)
-        if (post.authorId == req.visitorId) {
-            res.render('edit-post', {post: post})
-        } else {
-            req.flash("errors", "You don't have permisssions to perform that action.")
-            req.session.save(() => res.redirect("/"))
-        }
+      let post = await Post.findSinglePostById(req.params.id, req.visitorId)
+      if (post.isVisitorOwner) {
+        res.render("edit-post", {post: post})
+      } else {
+        req.flash("errors", "You do not have permission to perform that action.")
+        req.session.save(() => res.redirect(`/post/${req.params.id}`))
+      }
     } catch {
-        res.render('404')
+      res.render("404")
     }
-    
 }
 
 exports.edit = function(req, res) {

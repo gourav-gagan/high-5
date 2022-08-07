@@ -1,6 +1,7 @@
 const postsCollection = require('../db').db().collection("posts")
 const ObjectId = require('mongoose').Types.ObjectId
 const User = require('./User')
+const sanitizeHTML = require('sanitize-html')
 
 let Post = function(data, userid, requestedPostId) {
     this.data = data
@@ -15,8 +16,8 @@ Post.prototype.cleanUp = function() {
 
     // get rid of unwanted inputs
     this.data = {
-        title: this.data.title.trim(), // trim to ignore empty spaces start and end of title
-        body: this.data.body.trim(),
+        title: sanitizeHTML(this.data.title.trim(), {allowedTags: [], allowedAttributes: {}}), // trim to ignore empty spaces start and end of title
+        body: sanitizeHTML(this.data.body.trim(), {allowedTags: [], allowedAttributes: {}}),
         createdDate: new Date(),
         author: ObjectId(this.data.userid)
     }
